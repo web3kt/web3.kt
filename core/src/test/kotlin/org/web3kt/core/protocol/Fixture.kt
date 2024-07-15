@@ -22,6 +22,7 @@ object Fixture {
                     },
                 )
             }
-            defaultRequest { url("http://localhost:8545") }
+            // defaultRequest { url("http://localhost:8545") }
+            defaultRequest { url("https://testnet.directional.io") }
         }
 }

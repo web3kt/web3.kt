@@ -18,7 +18,7 @@ class TraceTest {
     private val traceOptions: List<TraceOption> = TraceOption.entries
 
     @Test
-    fun blockByNumber(): Unit = runBlocking { trace.block(blockNumber) }
+    fun blockByNumber(): Unit = runBlocking { println(trace.block(124619.toBigInteger())) }
 
     fun blockByTag(): Unit = runBlocking { trace.block(tag) }
 
@@ -57,5 +57,5 @@ class TraceTest {
     fun testReplayBlockTransactions(): Unit = runBlocking { }
 
     @Test
-    fun transaction(): Unit = runBlocking { trace.transaction(transactionHash) }
+    fun transaction(): Unit = runBlocking { println(trace.transaction(transactionHash)) }
 }

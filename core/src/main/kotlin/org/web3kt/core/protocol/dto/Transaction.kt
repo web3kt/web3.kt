@@ -7,7 +7,7 @@ import org.web3kt.core.protocol.serializer.Integer
 data class Transaction(
     val accessList: List<Access>? = null,
     val blockHash: String,
-    val blockNumber: String,
+    val blockNumber: Integer,
     val chainId: Integer? = null,
     val from: String,
     val gas: Integer,
