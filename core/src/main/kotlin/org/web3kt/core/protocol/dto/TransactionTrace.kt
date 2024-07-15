@@ -7,13 +7,13 @@ import org.web3kt.core.protocol.serializer.Integer
 data class TransactionTrace(
     val action: Action,
     val blockHash: String,
-    val blockNumber: Int,
+    val blockNumber: Long,
     val result: Result? = null,
-    val subtraces: Int,
-    val traceAddress: List<Int>,
+    val subtraces: Int? = null,
+    val traceAddress: List<Long>,
     val transactionHash: String? = null,
-    val transactionPosition: Int? = null,
-    val type: String,
+    val transactionPosition: Long? = null,
+    val type: String? = null,
 ) {
     @Serializable
     data class Action(
@@ -22,14 +22,14 @@ data class TransactionTrace(
         val gas: Integer? = null,
         val input: String? = null,
         val to: String? = null,
-        val value: Integer,
+        val value: Integer? = null,
         val author: String? = null,
         val rewardType: String? = null,
     )
 
     @Serializable
     data class Result(
-        val gasUsed: Integer,
-        val output: String,
+        val gasUsed: Integer? = null,
+        val output: String? = null,
     )
 }
