@@ -18,7 +18,6 @@ dependencies {
     api("io.ktor:ktor-client-content-negotiation:2.3.12")
     api("io.ktor:ktor-serialization-kotlinx-json:2.3.12")
     implementation("ch.qos.logback:logback-classic:1.5.6")
-    implementation("org.jetbrains.kotlin:kotlin-reflect")
     testImplementation(kotlin("test"))
 }
 

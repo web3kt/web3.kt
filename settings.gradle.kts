@@ -3,3 +3,4 @@ plugins {
 }
 rootProject.name = "web3"
 include("core")
+include("rlp")
