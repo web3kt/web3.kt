@@ -7,11 +7,11 @@ Web3.kt is a Kotlin implementation of the [Besu API](https://besu.hyperledger.or
 <dependency>
     <groupId>org.web3kt</groupId>
     <artifactId>core</artifactId>
-    <version>0.0.1</version>
+    <version>0.1.1</version>
 </dependency>
 ```
 
 ## Gradle
 ```kotlin
-implementation("org.web3kt:core:0.0.1")
+implementation("org.web3kt:core:0.1.1")
 ```
