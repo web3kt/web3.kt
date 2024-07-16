@@ -3,6 +3,7 @@
 Web3.kt is a Kotlin implementation of the [Besu API](https://besu.hyperledger.org/development/public-networks/reference/api).
 
 ## Maven
+
 ```xml
 <dependency>
     <groupId>org.web3kt</groupId>
@@ -12,6 +13,7 @@ Web3.kt is a Kotlin implementation of the [Besu API](https://besu.hyperledger.or
 ```
 
 ## Gradle
+
 ```kotlin
 implementation("org.web3kt:core:0.1.1")
 ```
