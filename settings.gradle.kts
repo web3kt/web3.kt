@@ -5,3 +5,5 @@ rootProject.name = "web3"
 include("core")
 include("rlp")
 include("abi")
+include("poet")
+include("contract")
