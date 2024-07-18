@@ -9,15 +9,7 @@ fun List<Byte>.toHex(): String = this.toByteArray().toHex()
 
 fun Boolean.toByteArray(): ByteArray = (if (this) 1 else 0).toByteArray()
 
-fun Byte.toByteArray(): ByteArray = byteArrayOf(this)
-
-fun Char.toByteArray(): ByteArray = code.toByteArray()
-
-fun Short.toByteArray(): ByteArray = BigInteger.valueOf(toLong()).toByteArray()
-
 fun Int.toByteArray(): ByteArray = toBigInteger().toByteArray()
-
-fun Long.toByteArray(): ByteArray = toBigInteger().toByteArray()
 
 fun ByteArray.toBoolean(): Boolean = last() == 0x01.toByte()
 

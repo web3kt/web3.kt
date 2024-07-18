@@ -35,7 +35,7 @@ import org.web3kt.abi.type.Bytes7Type
 import org.web3kt.abi.type.Bytes8Type
 import org.web3kt.abi.type.Bytes9Type
 import org.web3kt.abi.type.BytesType
-import org.web3kt.abi.type.DynamicArray
+import org.web3kt.abi.type.DynamicArrayType
 import org.web3kt.abi.type.Int104Type
 import org.web3kt.abi.type.Int112Type
 import org.web3kt.abi.type.Int120Type
@@ -69,7 +69,7 @@ import org.web3kt.abi.type.Int88Type
 import org.web3kt.abi.type.Int8Type
 import org.web3kt.abi.type.Int96Type
 import org.web3kt.abi.type.IntType
-import org.web3kt.abi.type.StaticArray
+import org.web3kt.abi.type.StaticArrayType
 import org.web3kt.abi.type.StringType
 import org.web3kt.abi.type.Type
 import org.web3kt.abi.type.Uint104Type
@@ -152,7 +152,7 @@ object TypeEncoder {
                 is Bytes8Type -> type.encode()
                 is Bytes9Type -> type.encode()
                 is BytesType -> type.encode()
-                is DynamicArray<*> -> type.encode()
+                is DynamicArrayType<*> -> type.encode()
                 is Int104Type -> type.encode()
                 is Int112Type -> type.encode()
                 is Int120Type -> type.encode()
@@ -186,7 +186,7 @@ object TypeEncoder {
                 is Int8Type -> type.encode()
                 is Int96Type -> type.encode()
                 is IntType -> type.encode()
-                is StaticArray<*> -> type.encode()
+                is StaticArrayType<*> -> type.encode()
                 is StringType -> type.encode()
                 is Uint104Type -> type.encode()
                 is Uint112Type -> type.encode()
@@ -298,7 +298,7 @@ object TypeEncoder {
 
     private fun BytesType.encode(): ByteArray = value.padEndWithSize()
 
-    private fun DynamicArray<*>.encode(): ByteArray {
+    private fun DynamicArrayType<*>.encode(): ByteArray {
         val builder = TypeBuilder(size + 1)
         builder.append(Uint256Type(size.toBigInteger()))
         value.forEach { builder.append(it) }
@@ -470,7 +470,7 @@ object TypeEncoder {
         return value.toByteArray().padStart(padByte)
     }
 
-    private fun StaticArray<*>.encode(): ByteArray {
+    private fun StaticArrayType<*>.encode(): ByteArray {
         val builder = TypeBuilder(size)
         value.forEach { builder.append(it) }
         return builder.build()

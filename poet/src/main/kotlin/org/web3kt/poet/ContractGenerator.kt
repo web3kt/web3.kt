@@ -1,84 +1,118 @@
 package org.web3kt.poet
 
+import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
-import com.squareup.kotlinpoet.KModifier
-import com.squareup.kotlinpoet.PropertySpec
+import com.squareup.kotlinpoet.ParameterSpec
+import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.TypeSpec
 import kotlinx.serialization.json.Json
 import java.io.File
 
 object ContractGenerator {
+    fun removeGenericPart(input: String): String {
+        // Define the regex pattern to match the generic part
+        val regex = "<[^>]*>".toRegex()
+        // Replace the matched part with an empty string
+        return input.replace(regex, "")
+    }
+
     fun generate(
-        className: String,
+        contractName: String,
         abiString: String,
     ) {
-        val abis = Json.decodeFromString<List<Abi>>(abiString)
+        val abiList = Json.decodeFromString<List<Abi>>(abiString)
+        val packageName = "org.web3kt.contract"
+        val className = ClassName(packageName, contractName)
+
+        val imports =
+            abiList
+                .flatMap { it.inputs.map { it.type } + it.outputs.map { it.type } }
+                .map { removeGenericPart(Util.getTypeSimpleName(it)) }
+                .toSet()
+                .toTypedArray()
         val fileSpecBuilder =
             FileSpec
-                .builder("org.web3kt.contract", className)
-                .addImport("org.web3kt.abi", "AbiEncoder")
-                .addImport("org.web3kt.core.protocol.dto", "Tag")
-                .addImport("org.web3kt.core.protocol.dto", "TransactionCall")
+                .builder(className)
+                .addImport("org.web3kt.abi", "Function")
+                .addImport("org.web3kt.abi.type", "TypeReference")
+                .addImport("org.web3kt.abi.type", *imports)
 
         val classSpecBuilder =
             TypeSpec
                 .classBuilder(className)
+                .primaryConstructor(
+                    FunSpec
+                        .constructorBuilder()
+                        .addParameter("web3", ClassName("org.web3kt.core", "Web3"))
+                        .addParameter("address", String::class)
+                        .addParameter("caller", String::class)
+                        .build(),
+                ).superclass(ClassName(packageName, "Contract"))
+                .addSuperclassConstructorParameter("web3")
+                .addSuperclassConstructorParameter("address")
+                .addSuperclassConstructorParameter("caller")
+                .addAnnotation(
+                    AnnotationSpec
+                        .builder(Suppress::class)
+                        .addMember(
+                            "%S, %S, %S, %S, %S",
+                            "ktlint:standard:function-naming",
+                            "unchecked_cast",
+                            "unused",
+                            "FunctionName",
+                            "SpellCheckingInspection",
+                        ).build(),
+                )
 
-        val constructorFunSpec =
-            FunSpec
-                .constructorBuilder()
-                .addParameter("web3", ClassName("org.web3kt.core", "Web3"))
-                .addParameter("address", String::class)
-                .addParameter("caller", String::class)
-                .build()
+        abiList.forEach { abi ->
+            if (abi.type == "function") {
+                val funSpecBuilder = FunSpec.builder(abi.name!!) // !!.toCamelCase())
 
-        classSpecBuilder
-            .primaryConstructor(constructorFunSpec)
-            .addProperty(PropertySpec.builder("web3", ClassName("org.web3kt.core", "Web3")).initializer("web3").build())
-            .addProperty(PropertySpec.builder("address", String::class).initializer("address").build())
-            .addProperty(PropertySpec.builder("caller", String::class).initializer("caller").build())
+                abi.inputs.forEach {
+                    funSpecBuilder.addParameter(ParameterSpec.builder(it.name, Util.getTypeName(it.type)).build())
+                }
 
-        val importType = mutableSetOf<String>()
-        abis.filter { it.type == "function" }.forEach {
-            val funSpecBuilder =
-                FunSpec
-                    .builder(it.name!!)
-                    .addModifiers(KModifier.SUSPEND)
-                    // .addStatement("val selector = %S", it.getSelector())
-                    .returns(String::class)
+                val inputs = abi.inputs.joinToString { "${Util.getTypeSimpleName(it.type)}(${it.name})" }
+                val outputs = abi.outputs.joinToString { "TypeReference<${Util.getTypeSimpleName(it.type)}>()" }
 
-            it.inputs.forEach { input ->
-                funSpecBuilder.addParameter(input.name, Util.getKClass(input.type))
-            }
+                funSpecBuilder
+                    .addStatement("val function = Function(\"${abi.name}\", listOf($inputs), listOf($outputs))")
 
-            if (it.stateMutability == "view") {
-                val parameter =
-                    it.inputs.joinToString { input ->
-                        val typeName = Util.getTypeClassName(input.type)
-                        importType.add(typeName)
-                        "$typeName(${input.name})"
+                if (abi.stateMutability == "view") {
+                    if (abi.outputs.size == 1) {
+                        val simpleName = Util.getClassSimpleName(abi.outputs.first().type)
+                        val typeName = Util.getTypeName(abi.outputs.first().type)
+                        funSpecBuilder
+                            .returns(typeName)
+                            .addStatement("return call<$simpleName>(function)")
+                    } else if (abi.outputs.size > 1) {
+                        val types = abi.outputs.map { Util.getTypeName(it.type) }
+                        val tupleName = "Tuple${abi.outputs.size}"
+                        val outputClassName =
+                            ClassName("org.web3kt.abi.tuple", tupleName)
+                                .parameterizedBy(types)
+
+                        val tupleContent = types.mapIndexed { index, it -> "types[$index].value as $it" }.joinToString()
+                        funSpecBuilder
+                            .returns(outputClassName)
+                            .addStatement("val types = call(function)")
+                            .addStatement("return $tupleName($tupleContent)")
                     }
-                funSpecBuilder.addStatement("val data = selector + AbiEncoder.encode($parameter)")
-                funSpecBuilder.addStatement("return web3.eth.call(TransactionCall(from = caller, to = address, data = data), Tag.LATEST)")
-            } else {
-                funSpecBuilder.addStatement("TODO(\"${it.name}\")")
+                } else {
+                    funSpecBuilder
+                        .returns(String::class)
+                        .addStatement("return send(function)")
+                }
+
+                classSpecBuilder.addFunction(funSpecBuilder.build())
             }
-
-            classSpecBuilder.addFunction(funSpecBuilder.build())
         }
 
-        val classSpec =
-            classSpecBuilder
-                .build()
-
-        importType.forEach {
-            fileSpecBuilder.addImport("org.web3kt.abi.type", it)
-        }
         val fileSpec =
             fileSpecBuilder
-                .addType(classSpec)
+                .addType(classSpecBuilder.build())
                 .build()
 
         fileSpec.writeTo(File("contract/src/main/kotlin"))

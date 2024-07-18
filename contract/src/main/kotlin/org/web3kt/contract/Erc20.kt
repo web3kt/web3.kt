@@ -1,211 +1,300 @@
 package org.web3kt.contract
 
-import org.web3kt.abi.AbiEncoder
+import org.web3kt.abi.Function
+import org.web3kt.abi.tuple.Tuple7
+import org.web3kt.abi.type.AddressType
+import org.web3kt.abi.type.BoolType
+import org.web3kt.abi.type.Bytes1Type
+import org.web3kt.abi.type.Bytes32Type
+import org.web3kt.abi.type.Bytes4Type
+import org.web3kt.abi.type.DynamicArrayType
+import org.web3kt.abi.type.StringType
+import org.web3kt.abi.type.TypeReference
+import org.web3kt.abi.type.Uint256Type
+import org.web3kt.abi.type.Uint8Type
 import org.web3kt.core.Web3
-import org.web3kt.core.protocol.dto.Tag
-import org.web3kt.core.protocol.dto.TransactionCall
 import java.math.BigInteger
-import kotlin.ByteArray
-import kotlin.Short
-import kotlin.String
 
-public class Erc20(
-    public val web3: Web3,
-    public val address: String,
-    public val caller: String,
-) {
-    public suspend fun DEFAULT_ADMIN_ROLE(): String {
-        val selector = "0xa217fddf"
-        val data = selector + AbiEncoder.encode()
-        return web3.eth.call(TransactionCall(from = caller, to = address, data = data), Tag.LATEST)
+@Suppress(
+    "ktlint:standard:function-naming",
+    "unchecked_cast",
+    "unused",
+    "FunctionName",
+    "SpellCheckingInspection",
+)
+class Erc20(
+    web3: Web3,
+    address: String,
+    caller: String,
+) : Contract(web3, address, caller) {
+    fun DEFAULT_ADMIN_ROLE(): ByteArray {
+        val function = Function("DEFAULT_ADMIN_ROLE", listOf(), listOf(TypeReference<Bytes32Type>()))
+        return call<ByteArray>(function)
     }
 
-    public suspend fun DOMAIN_SEPARATOR(): String {
-        val selector = "0x3644e515"
-        val data = selector + AbiEncoder.encode()
-        return web3.eth.call(TransactionCall(from = caller, to = address, data = data), Tag.LATEST)
+    fun DOMAIN_SEPARATOR(): ByteArray {
+        val function = Function("DOMAIN_SEPARATOR", listOf(), listOf(TypeReference<Bytes32Type>()))
+        return call<ByteArray>(function)
     }
 
-    public suspend fun MINTER_ROLE(): String {
-        val selector = "0xd5391393"
-        val data = selector + AbiEncoder.encode()
-        return web3.eth.call(TransactionCall(from = caller, to = address, data = data), Tag.LATEST)
+    fun MINTER_ROLE(): ByteArray {
+        val function = Function("MINTER_ROLE", listOf(), listOf(TypeReference<Bytes32Type>()))
+        return call<ByteArray>(function)
     }
 
-    public suspend fun PAUSER_ROLE(): String {
-        val selector = "0xe63ab1e9"
-        val data = selector + AbiEncoder.encode()
-        return web3.eth.call(TransactionCall(from = caller, to = address, data = data), Tag.LATEST)
+    fun PAUSER_ROLE(): ByteArray {
+        val function = Function("PAUSER_ROLE", listOf(), listOf(TypeReference<Bytes32Type>()))
+        return call<ByteArray>(function)
     }
 
-    public suspend fun allowance(
+    fun allowance(
         owner: String,
         spender: String,
-    ): String {
-        val selector = "0xdd62ed3e"
-        val data = selector + AbiEncoder.encode(AddressType(owner), AddressType(spender))
-        return web3.eth.call(TransactionCall(from = caller, to = address, data = data), Tag.LATEST)
+    ): BigInteger {
+        val function =
+            Function(
+                "allowance",
+                listOf(AddressType(owner), AddressType(spender)),
+                listOf(TypeReference<Uint256Type>()),
+            )
+        return call<BigInteger>(function)
     }
 
-    public suspend fun approve(
+    fun approve(
         spender: String,
         `value`: BigInteger,
     ): String {
-        val selector = "0x095ea7b3"
-        TODO("approve")
+        val function =
+            Function(
+                "approve",
+                listOf(AddressType(spender), Uint256Type(value)),
+                listOf(TypeReference<BoolType>()),
+            )
+        return send(function)
     }
 
-    public suspend fun balanceOf(account: String): String {
-        val selector = "0x70a08231"
-        val data = selector + AbiEncoder.encode(AddressType(account))
-        return web3.eth.call(TransactionCall(from = caller, to = address, data = data), Tag.LATEST)
+    fun balanceOf(account: String): BigInteger {
+        val function =
+            Function(
+                "balanceOf",
+                listOf(AddressType(account)),
+                listOf(TypeReference<Uint256Type>()),
+            )
+        return call<BigInteger>(function)
     }
 
-    public suspend fun burn(`value`: BigInteger): String {
-        val selector = "0x42966c68"
-        TODO("burn")
+    fun burn(`value`: BigInteger): String {
+        val function = Function("burn", listOf(Uint256Type(value)), listOf())
+        return send(function)
     }
 
-    public suspend fun burnFrom(
+    fun burnFrom(
         account: String,
         `value`: BigInteger,
     ): String {
-        val selector = "0x79cc6790"
-        TODO("burnFrom")
+        val function = Function("burnFrom", listOf(AddressType(account), Uint256Type(value)), listOf())
+        return send(function)
     }
 
-    public suspend fun decimals(): String {
-        val selector = "0x313ce567"
-        val data = selector + AbiEncoder.encode()
-        return web3.eth.call(TransactionCall(from = caller, to = address, data = data), Tag.LATEST)
+    fun decimals(): BigInteger {
+        val function = Function("decimals", listOf(), listOf(TypeReference<Uint8Type>()))
+        return call<BigInteger>(function)
     }
 
-    public suspend fun eip712Domain(): String {
-        val selector = "0x84b0196e"
-        val data = selector + AbiEncoder.encode()
-        return web3.eth.call(TransactionCall(from = caller, to = address, data = data), Tag.LATEST)
+    fun eip712Domain(): Tuple7<ByteArray, String, String, BigInteger, String, ByteArray, List<BigInteger>> {
+        val function =
+            Function(
+                "eip712Domain",
+                listOf(),
+                listOf(
+                    TypeReference<Bytes1Type>(),
+                    TypeReference<StringType>(),
+                    TypeReference<StringType>(),
+                    TypeReference<Uint256Type>(),
+                    TypeReference<AddressType>(),
+                    TypeReference<Bytes32Type>(),
+                    TypeReference<DynamicArrayType<Uint256Type>>(),
+                ),
+            )
+        val types = call(function)
+        return Tuple7(
+            types[0].value as ByteArray,
+            types[1].value as String,
+            types[2].value as String,
+            types[3].value as BigInteger,
+            types[4].value as String,
+            types[5].value as ByteArray,
+            types[6].value as List<BigInteger>,
+        )
     }
 
-    public suspend fun getRoleAdmin(role: ByteArray): String {
-        val selector = "0x248a9ca3"
-        val data = selector + AbiEncoder.encode(Bytes32Type(role))
-        return web3.eth.call(TransactionCall(from = caller, to = address, data = data), Tag.LATEST)
+    fun getRoleAdmin(role: ByteArray): ByteArray {
+        val function =
+            Function(
+                "getRoleAdmin",
+                listOf(Bytes32Type(role)),
+                listOf(TypeReference<Bytes32Type>()),
+            )
+        return call<ByteArray>(function)
     }
 
-    public suspend fun grantRole(
+    fun grantRole(
         role: ByteArray,
         account: String,
     ): String {
-        val selector = "0x2f2ff15d"
-        TODO("grantRole")
+        val function = Function("grantRole", listOf(Bytes32Type(role), AddressType(account)), listOf())
+        return send(function)
     }
 
-    public suspend fun hasRole(
+    fun hasRole(
         role: ByteArray,
         account: String,
-    ): String {
-        val selector = "0x91d14854"
-        val data = selector + AbiEncoder.encode(Bytes32Type(role), AddressType(account))
-        return web3.eth.call(TransactionCall(from = caller, to = address, data = data), Tag.LATEST)
+    ): Boolean {
+        val function =
+            Function(
+                "hasRole",
+                listOf(Bytes32Type(role), AddressType(account)),
+                listOf(TypeReference<BoolType>()),
+            )
+        return call<Boolean>(function)
     }
 
-    public suspend fun mint(
+    fun mint(
         to: String,
         amount: BigInteger,
     ): String {
-        val selector = "0x40c10f19"
-        TODO("mint")
+        val function = Function("mint", listOf(AddressType(to), Uint256Type(amount)), listOf())
+        return send(function)
     }
 
-    public suspend fun name(): String {
-        val selector = "0x06fdde03"
-        val data = selector + AbiEncoder.encode()
-        return web3.eth.call(TransactionCall(from = caller, to = address, data = data), Tag.LATEST)
+    fun name(): String {
+        val function = Function("name", listOf(), listOf(TypeReference<StringType>()))
+        return call<String>(function)
     }
 
-    public suspend fun nonces(owner: String): String {
-        val selector = "0x7ecebe00"
-        val data = selector + AbiEncoder.encode(AddressType(owner))
-        return web3.eth.call(TransactionCall(from = caller, to = address, data = data), Tag.LATEST)
+    fun nonces(owner: String): BigInteger {
+        val function =
+            Function(
+                "nonces",
+                listOf(AddressType(owner)),
+                listOf(TypeReference<Uint256Type>()),
+            )
+        return call<BigInteger>(function)
     }
 
-    public suspend fun pause(): String {
-        val selector = "0x8456cb59"
-        TODO("pause")
+    fun pause(): String {
+        val function = Function("pause", listOf(), listOf())
+        return send(function)
     }
 
-    public suspend fun paused(): String {
-        val selector = "0x5c975abb"
-        val data = selector + AbiEncoder.encode()
-        return web3.eth.call(TransactionCall(from = caller, to = address, data = data), Tag.LATEST)
+    fun paused(): Boolean {
+        val function = Function("paused", listOf(), listOf(TypeReference<BoolType>()))
+        return call<Boolean>(function)
     }
 
-    public suspend fun permit(
+    fun permit(
         owner: String,
         spender: String,
         `value`: BigInteger,
         deadline: BigInteger,
-        v: Short,
+        v: BigInteger,
         r: ByteArray,
         s: ByteArray,
     ): String {
-        val selector = "0xd505accf"
-        TODO("permit")
+        val function =
+            Function(
+                "permit",
+                listOf(
+                    AddressType(owner),
+                    AddressType(spender),
+                    Uint256Type(value),
+                    Uint256Type(deadline),
+                    Uint8Type(v),
+                    Bytes32Type(r),
+                    Bytes32Type(s),
+                ),
+                listOf(),
+            )
+        return send(function)
     }
 
-    public suspend fun renounceRole(
+    fun renounceRole(
         role: ByteArray,
         callerConfirmation: String,
     ): String {
-        val selector = "0x36568abe"
-        TODO("renounceRole")
+        val function =
+            Function(
+                "renounceRole",
+                listOf(
+                    Bytes32Type(role),
+                    AddressType(callerConfirmation),
+                ),
+                listOf(),
+            )
+        return send(function)
     }
 
-    public suspend fun revokeRole(
+    fun revokeRole(
         role: ByteArray,
         account: String,
     ): String {
-        val selector = "0xd547741f"
-        TODO("revokeRole")
+        val function = Function("revokeRole", listOf(Bytes32Type(role), AddressType(account)), listOf())
+        return send(function)
     }
 
-    public suspend fun supportsInterface(interfaceId: ByteArray): String {
-        val selector = "0x01ffc9a7"
-        val data = selector + AbiEncoder.encode(Bytes4Type(interfaceId))
-        return web3.eth.call(TransactionCall(from = caller, to = address, data = data), Tag.LATEST)
+    fun supportsInterface(interfaceId: ByteArray): Boolean {
+        val function =
+            Function(
+                "supportsInterface",
+                listOf(Bytes4Type(interfaceId)),
+                listOf(TypeReference<BoolType>()),
+            )
+        return call<Boolean>(function)
     }
 
-    public suspend fun symbol(): String {
-        val selector = "0x95d89b41"
-        val data = selector + AbiEncoder.encode()
-        return web3.eth.call(TransactionCall(from = caller, to = address, data = data), Tag.LATEST)
+    fun symbol(): String {
+        val function = Function("symbol", listOf(), listOf(TypeReference<StringType>()))
+        return call<String>(function)
     }
 
-    public suspend fun totalSupply(): String {
-        val selector = "0x18160ddd"
-        val data = selector + AbiEncoder.encode()
-        return web3.eth.call(TransactionCall(from = caller, to = address, data = data), Tag.LATEST)
+    fun totalSupply(): BigInteger {
+        val function = Function("totalSupply", listOf(), listOf(TypeReference<Uint256Type>()))
+        return call<BigInteger>(function)
     }
 
-    public suspend fun transfer(
+    fun transfer(
         to: String,
         `value`: BigInteger,
     ): String {
-        val selector = "0xa9059cbb"
-        TODO("transfer")
+        val function =
+            Function(
+                "transfer",
+                listOf(AddressType(to), Uint256Type(value)),
+                listOf(TypeReference<BoolType>()),
+            )
+        return send(function)
     }
 
-    public suspend fun transferFrom(
+    fun transferFrom(
         from: String,
         to: String,
         `value`: BigInteger,
     ): String {
-        val selector = "0x23b872dd"
-        TODO("transferFrom")
+        val function =
+            Function(
+                "transferFrom",
+                listOf(
+                    AddressType(from),
+                    AddressType(to),
+                    Uint256Type(value),
+                ),
+                listOf(TypeReference<BoolType>()),
+            )
+        return send(function)
     }
 
-    public suspend fun unpause(): String {
-        val selector = "0x3f4ba83a"
-        TODO("unpause")
+    fun unpause(): String {
+        val function = Function("unpause", listOf(), listOf())
+        return send(function)
     }
 }

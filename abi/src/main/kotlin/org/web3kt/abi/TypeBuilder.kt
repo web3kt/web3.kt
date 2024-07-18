@@ -1,8 +1,8 @@
 package org.web3kt.abi
 
 import org.web3kt.abi.type.BytesType
-import org.web3kt.abi.type.DynamicArray
-import org.web3kt.abi.type.StaticArray
+import org.web3kt.abi.type.DynamicArrayType
+import org.web3kt.abi.type.StaticArrayType
 import org.web3kt.abi.type.StringType
 import org.web3kt.abi.type.Type
 
@@ -23,7 +23,7 @@ class TypeBuilder(
     private var index = 0
 
     fun append(type: Type<*>) {
-        if (type is BytesType || type is StringType || type is DynamicArray<*>) {
+        if (type is BytesType || type is StringType || type is DynamicArrayType<*>) {
             set(index, offset().toByteArray().padStart())
             set(size, TypeEncoder.encode(type))
         } else {
@@ -46,7 +46,7 @@ class TypeBuilder(
     companion object {
         fun getOffset(types: List<Type<*>>): Int =
             types
-                .filterIsInstance<StaticArray<*>>()
+                .filterIsInstance<StaticArrayType<*>>()
                 .let { it.sumOf { it.size } - it.size } * 32
     }
 }

@@ -7,11 +7,11 @@ import org.web3kt.abi.type.Bytes11Type
 import org.web3kt.abi.type.Bytes12Type
 import org.web3kt.abi.type.Bytes32Type
 import org.web3kt.abi.type.BytesType
-import org.web3kt.abi.type.DynamicArray
+import org.web3kt.abi.type.DynamicArrayType
 import org.web3kt.abi.type.Int104Type
 import org.web3kt.abi.type.Int112Type
 import org.web3kt.abi.type.Int256Type
-import org.web3kt.abi.type.StaticArray
+import org.web3kt.abi.type.StaticArrayType
 import org.web3kt.abi.type.StringType
 import org.web3kt.abi.type.Uint104Type
 import org.web3kt.abi.type.Uint256Type
@@ -25,7 +25,7 @@ class TypeEncoderTest {
     fun encode() {
         val types =
             listOf(
-                DynamicArray(
+                DynamicArrayType(
                     Bytes32Type::class,
                     listOf(
                         Bytes32Type("a3663fb46581988ec773c70141c0cff477fc216c56bd4118fc0e9143f7203db7".hexToByteArray()),
@@ -42,7 +42,7 @@ class TypeEncoderTest {
                 ),
                 Bytes32Type("d4df5dbf1e6675fe99c4254750a64cc795901bb13f5dfd9b56e9009a9942e463".hexToByteArray()),
                 BoolType(true),
-                StaticArray(
+                StaticArrayType(
                     Uint256Type::class,
                     listOf(
                         Uint256Type(42.toBigInteger()),
@@ -120,7 +120,7 @@ class TypeEncoderTest {
     @Test
     fun encodeDynamicArray() {
         val value =
-            DynamicArray(
+            DynamicArrayType(
                 Uint256Type::class,
                 listOf(
                     Uint256Type(1.toBigInteger()),
@@ -154,7 +154,7 @@ class TypeEncoderTest {
     @Test
     fun encodeStaticArray() {
         val value =
-            StaticArray(
+            StaticArrayType(
                 Uint256Type::class,
                 listOf(
                     Uint256Type(1.toBigInteger()),

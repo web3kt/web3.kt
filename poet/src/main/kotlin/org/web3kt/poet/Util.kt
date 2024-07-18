@@ -1,16 +1,34 @@
 package org.web3kt.poet
 
+import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
+import com.squareup.kotlinpoet.TypeName
+import com.squareup.kotlinpoet.asClassName
 import java.math.BigInteger
-import kotlin.reflect.KClass
 
 object Util {
-    fun getKClass(type: String): KClass<*> =
+    fun String.capitalize() = replaceFirstChar { it.uppercase() }
+
+    fun String.decapitalize() = replaceFirstChar { it.lowercase() }
+
+    fun String.toCamelCase(): String {
+        if (!this.contains('_')) return this
+
+        return lowercase()
+            .split('_')
+            .mapIndexed { index, word ->
+                if (index == 0) word else word.capitalize()
+            }.joinToString("")
+            .decapitalize()
+    }
+
+    fun getClassSimpleName(type: String): String =
         when (type) {
             "address",
             "string",
-            -> String::class
+            -> "String"
 
-            "bool" -> Boolean::class
+            "bool" -> "Boolean"
 
             "int8",
             "int16",
@@ -78,7 +96,7 @@ object Util {
             "uint240",
             "uint248",
             "uint256",
-            -> BigInteger::class
+            -> "BigInteger"
 
             "bytes",
             "bytes1",
@@ -113,12 +131,36 @@ object Util {
             "bytes30",
             "bytes31",
             "bytes32",
-            -> ByteArray::class
+            -> "ByteArray"
 
-            else -> throw IllegalArgumentException("Unsupported type $type")
+            else -> {
+                if (type.endsWith("[]")) {
+                    "List<${getClassSimpleName(type.removeSuffix("[]"))}>"
+                } else {
+                    throw IllegalArgumentException("Unsupported type $type")
+                }
+            }
         }
 
-    fun getTypeClassName(type: String): String =
+    fun getTypeName(type: String): TypeName =
+        when (val simpleName = getClassSimpleName(type)) {
+            "String" -> String::class.asClassName()
+            "Boolean" -> Boolean::class.asClassName()
+            "BigInteger" -> BigInteger::class.asClassName()
+            "ByteArray" -> ByteArray::class.asClassName()
+
+            else -> {
+                if (simpleName.startsWith("List")) {
+                    List::class.asClassName().parameterizedBy(getTypeName(type.removeSuffix("[]")))
+                } else {
+                    throw IllegalArgumentException("Unsupported type $type")
+                }
+            }
+        }
+
+    fun getTypeClassName(type: String): ClassName = ClassName("org.web3kt.abi.type", getTypeSimpleName(type))
+
+    fun getTypeSimpleName(type: String): String =
         when (type) {
             "address" -> "AddressType"
             "string" -> "StringType"
@@ -222,7 +264,13 @@ object Util {
             "bytes30" -> "Bytes30Type"
             "bytes31" -> "Bytes31Type"
             "bytes32" -> "Bytes32Type"
-            else -> throw IllegalArgumentException("Unsupported type $type")
+            else -> {
+                if (type.endsWith("[]")) {
+                    "DynamicArrayType<${getTypeSimpleName(type.removeSuffix("[]"))}>"
+                } else {
+                    throw IllegalArgumentException("Unsupported type $type")
+                }
+            }
         }
 
     val typeClasses =
@@ -329,8 +377,8 @@ object Util {
             "Bytes30Type",
             "Bytes31Type",
             "Bytes32Type",
-            "StaticArray<*>",
-            "DynamicArray<*>",
+            "StaticArrayType",
+            "DynamicArrayType",
         ).sorted()
     val types =
         listOf(
