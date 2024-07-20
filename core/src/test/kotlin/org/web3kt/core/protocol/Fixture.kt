@@ -22,7 +22,6 @@ object Fixture {
                     },
                 )
             }
-            // defaultRequest { url("http://localhost:8545") }
-            defaultRequest { url("https://testnet.directional.io") }
+            defaultRequest { url("https://ethereum-rpc.directional.io") }
         }
 }

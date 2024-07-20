@@ -44,7 +44,7 @@ open class JsonRpc(
                 requestBuilder(this)
                 setBody(request)
             }.body<Response<T>>()
-            .let { it.result ?: throw JsonRpcException(it.error!!) }
+            .let { it.result ?: throw JsonRpcException(it.error) }
 
     fun Any?.toJsonElement(): JsonElement =
         when (this) {

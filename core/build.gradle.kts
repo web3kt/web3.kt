@@ -18,6 +18,7 @@ repositories {
 }
 
 dependencies {
+    api(project(":abi"))
     api("io.ktor:ktor-client-core:2.3.12")
     api("io.ktor:ktor-client-cio:2.3.12")
     api("io.ktor:ktor-client-logging:2.3.12")
