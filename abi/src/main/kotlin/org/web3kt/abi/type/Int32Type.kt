@@ -4,7 +4,7 @@ import java.math.BigInteger
 import kotlin.String
 
 public data class Int32Type(
-  override val `value`: BigInteger,
+    override val `value`: BigInteger,
 ) : Type<BigInteger> {
-  override val type: String = "int32"
+    override val type: String = "int32"
 }

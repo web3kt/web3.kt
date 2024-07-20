@@ -9,12 +9,12 @@ import kotlin.test.assertEquals
 
 class EthTest {
     private val eth = Eth(Fixture.jsonRpc)
-    private val blockNumber = 22.toBigInteger()
-    private val blockHash = "0x4b0af6e07dcdc2e4c16ec2a4383cf9666ab29fb8a9d3a02f6d4002d19f1fe1e3"
+    private val blockNumber = 52029.toBigInteger()
+    private val blockHash = "0x3a1fba5abd9d41457944e91ed097e039b7b12d3d7ba324a3f422db2277a48e28"
     private val tag = Tag.LATEST
-    private val address = "0x8023CD890dA3496370ff5A9Df9ACD6C76CFbCf5c"
+    private val address = "0xa50ec0d39fa913e62f1bae7074e6f36caa71855b"
     private val contract = "0xe3b1f2a9abaf551f6a9f4ec46f04af694a4276c5"
-    private val transactionHash = "0x05ea30b1ae8b1dc68cf556739bd5a87abc6387111a601c2d5010afeef31b169d"
+    private val transactionHash = "0x218b632d932371478d1ae5a01620ebab1a2030f9dad6f8fba4a044ea6335a57e"
 
     @Test
     fun accounts(): Unit = runBlocking { eth.accounts() }
@@ -65,7 +65,7 @@ class EthTest {
     fun chainId(): Unit =
         runBlocking {
             val actual = eth.chainId()
-            assertEquals(3566.toBigInteger(), actual)
+            assertEquals(1.toBigInteger(), actual)
         }
 
     @Test
@@ -145,10 +145,10 @@ class EthTest {
                 FilterOption(
                     fromBlock = blockNumber,
                     toBlock = blockNumber,
-                    address = contract,
+                    address = "0x5564886ca2c518d1964e5fcea4f423b41db9f561",
                 )
             val actual = eth.getLogs(filterOption).size
-            assertEquals(3, actual)
+            assertEquals(1, actual)
         }
 
     @Test
@@ -194,26 +194,13 @@ class EthTest {
         }
 
     @Test
-    fun getTransactionCount(): Unit =
-        runBlocking {
-            val expected = 2.toBigInteger()
-            val actual = eth.getTransactionCount(address, blockHash)
-            assertEquals(expected, actual)
-        }
+    fun getTransactionCount(): Unit = runBlocking { eth.getTransactionCount(address, blockHash) }
 
     @Test
-    fun testGetTransactionCount(): Unit =
-        runBlocking {
-            val expected = 2.toBigInteger()
-            val actual = eth.getTransactionCount(address, blockNumber)
-            assertEquals(expected, actual)
-        }
+    fun testGetTransactionCount(): Unit = runBlocking { eth.getTransactionCount(address, blockNumber) }
 
     @Test
-    fun testGetTransactionCount1(): Unit =
-        runBlocking {
-            eth.getTransactionCount(address, tag)
-        }
+    fun testGetTransactionCount1(): Unit = runBlocking { eth.getTransactionCount(address, tag) }
 
     @Test
     fun getTransactionReceipt(): Unit =

@@ -4,7 +4,7 @@ import kotlin.Boolean
 import kotlin.String
 
 public data class BoolType(
-  override val `value`: Boolean,
+    override val `value`: Boolean,
 ) : Type<Boolean> {
-  override val type: String = "bool"
+    override val type: String = "bool"
 }

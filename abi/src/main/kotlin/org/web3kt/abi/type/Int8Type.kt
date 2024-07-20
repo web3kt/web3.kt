@@ -4,7 +4,7 @@ import java.math.BigInteger
 import kotlin.String
 
 public data class Int8Type(
-  override val `value`: BigInteger,
+    override val `value`: BigInteger,
 ) : Type<BigInteger> {
-  override val type: String = "int8"
+    override val type: String = "int8"
 }

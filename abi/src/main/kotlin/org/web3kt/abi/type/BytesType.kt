@@ -4,7 +4,7 @@ import kotlin.ByteArray
 import kotlin.String
 
 public data class BytesType(
-  override val `value`: ByteArray,
+    override val `value`: ByteArray,
 ) : Type<ByteArray> {
-  override val type: String = "bytes"
+    override val type: String = "bytes"
 }

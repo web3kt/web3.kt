@@ -4,7 +4,7 @@ import java.math.BigInteger
 import kotlin.String
 
 public data class UintType(
-  override val `value`: BigInteger,
+    override val `value`: BigInteger,
 ) : Type<BigInteger> {
-  override val type: String = "uint"
+    override val type: String = "uint"
 }
