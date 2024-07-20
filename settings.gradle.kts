@@ -2,8 +2,4 @@ plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"
 }
 rootProject.name = "web3"
-include("core")
-include("rlp")
-include("abi")
 include("poet")
-include("contract")
